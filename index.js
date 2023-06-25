@@ -1,54 +1,32 @@
 const http = require('http');
+const fs = require('fs');
 const port = 3000;
+let data = require('./src/models/DB/data.json');
+const { getAllUser, createUser, deleteUserbyId,updatedUser } = require('./src/controllers/controllers');
 
+const server = http.createServer((req, res) => {
 
-const server = http.createServer(async(req, res) => {
-    // if (req.url==='/api'  && req.method ==='GET') {
-    //     res.write('forwarded to api');
-    //     res.end();
-    // } else {
-    //     res.write("Hello !!");
-    //     res.end();   
-    // }
-    // if(req.url==='/api/route' && req.method==='GET'){
-    //     res.write('kase ho bro');
-    //     res.end();
-    // }else{
-    //     res.write("Hello !!");
-    //     res.end(); 
-    // }
+  if (req.url === '/api' && req.method === 'GET') {
 
-    if (req.url === '/api' && req.method === 'POST') {
-        const body = () => {
-            return new Promise((resolve, reject) => {
-                try {
-                    let body = '';
-                    req.on('data', (chunk) => {
-                        body += chunk.toString();
-                    })
-                    req.on('end', () => {
-                        resolve(body);
-                    })
-                    res.statusCode = 201;
-                    res.write("Body is created");
-                    res.end();
-                } catch (error) {
-                    reject(error);
-                }
-            })
-        }
-        const resultedBody = await body();
-        console.log('res.body',resultedBody);
-        const getBody = JSON.parse(resultedBody);
-        console.log(getBody.message);
-         console.log(getBody.movie);
-          console.log(getBody.url);
-    } else {
-        res.write("Hello !!");
-        res.end();
-    }
-})
+    getAllUser(res);
+
+  } else if (req.url === '/api' && req.method === 'POST') {
+
+    createUser(req, res, fs);
+
+  } else if (req.url.match(/\/api\/\w+/) && req.method === 'PUT') {
+
+    updatedUser(req,res, fs);
+  }
+  else if (req.url.match(/\/api\/\w+/) && req.method === 'DELETE') {
+    deleteUserbyId(req, res, fs);
+  } else {
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Not Found');
+  }
+});
 
 server.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-})
+  console.log(`Listening on port ${port}`);
+});
