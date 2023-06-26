@@ -5,8 +5,11 @@ let data = require('./src/models/DB/data.json');
 const { getAllUser, createUser, deleteUserbyId,updatedUser } = require('./src/controllers/controllers');
 
 const server = http.createServer((req, res) => {
+  if(req.url === '/' && req.method === 'GET'){
+    res.write("Hello!!");
+    res.end();
 
-  if (req.url === '/api' && req.method === 'GET') {
+  }  else if (req.url === '/api' && req.method === 'GET') {
 
     getAllUser(res);
 
